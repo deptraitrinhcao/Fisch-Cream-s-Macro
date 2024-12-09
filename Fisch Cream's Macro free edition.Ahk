@@ -27,7 +27,7 @@ IniRead, sub_confirmation, Settings.ini, Fisch, sub_confirmation, 0
 
 ; If "sub_confirmation" is not set (0), prompt user to subscribe to the channel
 If (!sub_confirmation) {
-    Run, % "discord://invite/FischMacro"
+    Run, % "https://discord.gg/FischMacro"
     Sleep 3000  ; Wait for 3 seconds before showing the next message box
     ; Open the subscription URL for the user to subscribe
     Run, % "https://www.youtube.com/@VivaceConfetti?sub_confirmation=1"
