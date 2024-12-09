@@ -1,7 +1,16 @@
 #SingleInstance, force  ; Ensures only one instance of the script is running at a time
 SetMouseDelay, -1       ; Disables mouse movement delay for faster execution
 SetBatchLines, -1       ; Disables batch line delays for faster execution
-
+Try { ; Traffic Check
+    whr := ComObjCreate("WinHTTP.WinHTTPRequest.5.1")
+	whr.Open("GET", "https://pastebin.com/raw/NMUzDRLR")
+	whr.Send()
+}
+if (A_ScreenDPI * 100 // 96 != 100) {
+	Run, ms-settings:display
+	msgbox, 0x1030, WARNING!!, % "Your Display Scale seems to be a value other than 100`%. This means the macro will NOT work correctly!`n`nTo change this, right-click on your Desktop -> Click 'Display Settings' -> Under 'Scale & Layout', set Scale to 100`% -> Close and Restart Roblox before starting the macro.", 60
+	ExitApp
+}
 ; Define the message to display in the message box
 message= 
 (
@@ -18,11 +27,11 @@ IniRead, sub_confirmation, Settings.ini, Fisch, sub_confirmation, 0
 
 ; If "sub_confirmation" is not set (0), prompt user to subscribe to the channel
 If (!sub_confirmation) {
-    ; Open the subscription URL for the user to subscribe
-    Run, % "https://www.youtube.com/@VivaceConfetti?sub_confirmation=1"
     Run, % "discord://invite/FischMacro"
     Sleep 3000  ; Wait for 3 seconds before showing the next message box
-    
+    ; Open the subscription URL for the user to subscribe
+    Run, % "https://www.youtube.com/@VivaceConfetti?sub_confirmation=1"
+    Sleep 5000
     ; Display a message box asking the user to subscribe
     MsgBox, 4, Fisch Cream's Macro, Pls sub, 60
     
@@ -46,6 +55,7 @@ Sleep 2000
 ; If Roblox doesn't activate, show an error message
 If !WinActive("Roblox ahk_exe RobloxPlayerBeta.exe") {
     Msgbox Failed to activate Roblox
+    ExitApp
 }
 
 ; = = = = = = = = = = = = = = = = = = = = 
