@@ -1,4 +1,7 @@
 #SingleInstance, force  ; Ensures only one instance of the script is running at a time
+Coordmode, Mouse, Screen
+CoordMode, Pixel, Screen
+CoordMode, Tooltip, Screen
 SetMouseDelay, -1       ; Disables mouse movement delay for faster execution
 SetBatchLines, -1       ; Disables batch line delays for faster execution
 Try { ; Traffic Check
@@ -22,6 +25,21 @@ A friendly reminder: this macro will never ask for Admin access. If you obtained
 ; Display the message in a message box with a timeout of 60 seconds
 msgbox, , Fisch Cream's Macro, % message, 60
 
+
+message= 
+(
+Quick Tutorial: To use this macro, ensure you're in full-screen mode on Roblox and have Roblox Camera mode enabled.
+
+Support the original creator by purchasing the paid macro available on our Discord server.
+
+Current version: 3.
+)
+
+; Display the message in a message box with a timeout of 60 seconds
+msgbox, , Fisch Cream's Macro, % message, 60
+
+
+
 ; Read the "sub_confirmation" value from the Settings.ini file (default is 0)
 IniRead, sub_confirmation, Settings.ini, Fisch, sub_confirmation, 0
 
@@ -34,36 +52,65 @@ If (!sub_confirmation) {
     Sleep 5000
     ; Display a message box asking the user to subscribe
     MsgBox, 4, Fisch Cream's Macro, Pls sub, 60
-    
     ; If user presses "No", exit the macro
     IfMsgBox, No 
     {
         ExitApp
     }
+    Sleep 1000
 }
-
 ; If user has subscribed, write "1" to "sub_confirmation" in the settings.ini
 IniWrite, 1, Settings.ini, Fisch, sub_confirmation
 
 ; Read the "Control" value from the Settings.ini (default is 0) and set it for the macro's control parameter
-IniRead, Control, Settings.ini, Fisch, Control, 0 
-IniWrite, %Control%, Settings.ini, Fisch, Control ; Autosave for Control
+;IniRead, Control, Settings.ini, Fisch, Control, 0 
+;IniWrite, %Control%, Settings.ini, Fisch, Control ; Autosave for Control
 
 ; Activate the Roblox window for the macro to work with
 WinActivate, Roblox ahk_exe RobloxPlayerBeta.exe
-Sleep 2000
+Sleep 1000
 ; If Roblox doesn't activate, show an error message
 If !WinActive("Roblox ahk_exe RobloxPlayerBeta.exe") {
     Msgbox Failed to activate Roblox
     ExitApp
 }
-
 ; = = = = = = = = = = = = = = = = = = = = 
 ; Get the position and dimensions of the Roblox window
 WinGetPos,,, RobloxWidth,RobloxHeight, Roblox ahk_exe RobloxPlayerBeta.exe
+Sleep 100
+Send {f11}
+WinGetPos,,, RobloxWidth2,RobloxHeight2, Roblox ahk_exe RobloxPlayerBeta.exe
+IF (RobloxHeight >= RobloxHeight2) && (RobloxWidth >= RobloxWidth2) {
+    Sleep 100
+    Send {f11}
+}
+WinGetPos,,, RobloxWidth,RobloxHeight, Roblox ahk_exe RobloxPlayerBeta.exe
+; = = = = = = = = = = = = = = = = = = = =
+ColorUI := {"0xffdcac": 10, "0x3d381b": 10, "0xfffde4": 10}
+IngameUiXLeft := Round((RobloxWidth / 2560) * 2260)  ; Left X coordinate for ingame-ui
+IngameUiYLeft := Round((RobloxHeight / 1080) * 980)  ; Left Y coordinate for ingame-ui
+IngameUiXRight := Round((RobloxWidth / 2560) * 2560) ; Right X coordinate for ingame-ui
+IngameUiYRight := Round((RobloxHeight / 1080) * 1080) ; Right Y coordinate for ingame-ui
+Loop, 5 {
+    For Color, Variation in ColorUI {
+        PixelSearch,,, %IngameUiXLeft%, %IngameUiYLeft%, %IngameUiXRight%, %IngameUiXRight%, %Color%, %Variation%, Fast RGB 
+        If (ErrorLevel = 0) {
+            Tooltip, Pls Open Camera Mode
+            Sleep 1000
+            X := Round((RobloxWidth / 2560) * 2525)
+            If (RobloxWidth >= A_ScreenWidth) && (RobloxHeight >= A_ScreenHeight) {
+                Click, %X%, 35
+            } else {
+                Click, %X%, 65
+            }
+            Sleep 1000
+            Break
+        }
+    }
+}
 
 ; Calculate the bar size based on the Roblox window width (scaled for 800px width)
-Global Control := Round((RobloxWidth/800) * ((320 * Control) + 97)) ; Bar Size Calculator
+;Global Control := Round((RobloxWidth/800) * ((320 * Control) + 97)) ; Bar Size Calculator
 
 ; = = = = = = = = = = = = = = = = = = = = 
 ; Define coordinates for the mini-game area
@@ -81,13 +128,13 @@ Global ShakeYRight := Round((RobloxHeight / 800) * 675)  ; Right Y coordinate fo
 
 ; = = = = = = = = = = = = = = = = = = = = 
 ; Define color targets for different screen elements (fish, white, and bar)
-Global Color_Fish := {"0x434b5b":3}  ; Color for fish (with variation)
-Global Color_White := {"0xFFFFFF":15} ; Color for white (used for detecting certain screen regions)
+Global Color_Fish := {"0x434b5b": 3, "0x4a4a5c": 4, "0x47515d": 4}  ; Color for fish (with variation)
+Global Color_White := {"0xFFFFFF": 15} ; Color for white (used for detecting certain screen regions)
 Global Color_Bar := {"0x848587": 4, "0x787773": 4, "0x7a7873": 4} ; Colors for bar (with variations)
 ; = = = = = = = = = = = = = = = = = = = = 
 ; Calculation for Tooltip
 Loop, 20 {
-    TooltipPosY%A_Index% := (A_ScreenHeight / 1080) * 400 + (A_Index * 20)
+    TooltipPosY%A_Index% := (RobloxHeight / 1080) * 400 + (A_Index * 25)
 }
 SetTimer, UpdateTooltip, 1000 ; Updates the tooltip every second.
 RunTime := A_TickCount ; Stores the script's start time.
@@ -101,7 +148,6 @@ UpdateTooltip() {
 }
 tooltip, Made By Cweamya, 100, %TooltipPosY1%, 1
 tooltip, Runtime: 0h 0m 0s, 100, %TooltipPosY2%, 2
-
 tooltip, Press "Space" to Exit, 100, %TooltipPosY4%, 3
 Reels()
 LastShakeTimer := A_TickCount
@@ -119,6 +165,9 @@ Loop {
     
     ; If 7 seconds have passed since the last shake, trigger the Reels function
     If (A_TickCount - LastShakeTimer > 7000) {
+        tooltip, Current Task: FailSave Activated, 100, %TooltipPosY6%, 4
+        FailSave++
+        tooltip, FailSave Count: %FailSave%, 100, %TooltipPosY9%, 7
         Send m
         Sleep 250
         Reels()
@@ -126,16 +175,30 @@ Loop {
 
     ; If the fish and white color are found, proceed with fishing actions
     If (Search(Color_Fish) && Search(Color_White)) {
+        If (!Control) {
+            Loop, 50 {
+                PixelSearch, BarX, , MiniGameXLeft, MiniGameYLeft, MiniGameXRight, MiniGameYRight, 0xFFFFFF, 15, Fast RGB
+                if (ErrorLevel = 0) {
+                    Control := (MiniGameXRight - (BarX - MiniGameXLeft)) - BarX
+                    Break
+                }
+            }
+            If (Control <= 0) {
+                IniRead, Control, Settings.ini, Fisch, Control, 0 
+                IniWrite, %Control%, Settings.ini, Fisch, Control ; Autosave for Control
+                Control := Round((RobloxWidth/800) * ((320 * Control) + 97))
+            }
+        }
         tooltip,,,, 7
         tooltip,,,, 5
         tooltip,,,, 6
         tooltip, Current Task: Playing Bar Minigame, 100, %TooltipPosY6%, 4
-        tooltip, |, MiniGameXLeft + (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 11
-        tooltip, |, MiniGameXRight - (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 12
+        tooltip, |, MiniGameXLeft + (Control * 0.8), (RobloxHeight * 1080) * 1015, 11
+        tooltip, |, MiniGameXRight - (Control * 0.8), (RobloxHeight * 1080) * 1015, 12
         Loop {
             ; Get the current position of the fish
             FishPos := Search(Color_Fish) 
-            tooltip, ., FishPos, (A_ScreenHeight * 1080) * 1015, 13
+            tooltip, ., FishPos, (RobloxHeight * 1080) * 1015, 13
             tooltip,,,, 7
             ; If no fish is found, exit the loop
             If (!FishPos) {
@@ -146,18 +209,18 @@ Loop {
             if (FishPos < MiniGameXLeft + (Control * 0.8)) {
                 Mouse(0)
                 tooltip, Direction: Max Left, 100, TooltipPosY8, 6
-                tooltip, <, MiniGameXLeft + (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 11
+                tooltip, <, MiniGameXLeft + (Control * 0.8), (RobloxHeight * 1080) * 1015, 11
                 Continue
             } 
             ; If fish is on the right side of the control bar, start clicking (Mouse(1))
             else if (FishPos > MiniGameXRight - (Control * 0.8)) {
                 Mouse(1)
                 tooltip, Direction: Max Right, 100, TooltipPosY8, 6
-                tooltip, >, MiniGameXRight - (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 12
+                tooltip, >, MiniGameXRight - (Control * 0.8), (RobloxHeight * 1080) * 1015, 12
                 Continue
             }
-            tooltip, |, MiniGameXLeft + (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 11
-            tooltip, |, MiniGameXRight - (Control * 0.8), (A_ScreenHeight * 1080) * 1015, 12
+            tooltip, |, MiniGameXLeft + (Control * 0.8), (RobloxHeight * 1080) * 1015, 11
+            tooltip, |, MiniGameXRight - (Control * 0.8), (RobloxHeight * 1080) * 1015, 12
             
             ; Search for the white bar and adjust position, or search for the fallback bar color
             Bar := Search(Color_White) ? Search(Color_White) + Round(Control * 0.5) : Search(Color_Bar)
@@ -172,7 +235,7 @@ Loop {
 
             ; If the fish is within the valid range, hold the mouse button
             If (Range >= 0) {
-                tooltip, >, Bar, (A_ScreenHeight * 1080) * 1015, 14
+                tooltip, >, Bar, (RobloxHeight * 1080) * 1015, 14
                 tooltip, Direction: >, 100, TooltipPosY8, 6
                 Mouse(1)
                 HoldTimer := A_TickCount
@@ -180,7 +243,7 @@ Loop {
                 Loop {
                     ; Continuously check the fish position and calculate the range
                     FishPos := Search(Color_Fish)
-                    tooltip, ., FishPos, (A_ScreenHeight * 1080) * 1015, 13
+                    tooltip, ., FishPos, (RobloxHeight * 1080) * 1015, 13
                     Range := FishPos - OriginalPos
                     Hold := HoldFormula(Range)
                     
@@ -197,7 +260,7 @@ Loop {
                     Wait((A_TickCount - HoldTimer) * 0.6)
                 }
             } else {
-                tooltip, <, Bar, (A_ScreenHeight * 1080) * 1015, 14
+                tooltip, <, Bar, (RobloxHeight * 1080) * 1015, 14
                 tooltip, Direction: <, 100, TooltipPosY8, 6
                 ; If the fish is outside the range, release the mouse and adjust accordingly
                 HoldTimer := A_TickCount
@@ -213,7 +276,7 @@ Loop {
                 Loop {
                     ; Search for the fish position
                     FishPos := Search(Color_Fish)
-                    tooltip, ., FishPos, (A_ScreenHeight * 1080) * 1015, 13
+                    tooltip, ., FishPos, (RobloxHeight * 1080) * 1015, 13
                     ; Break if the fish is not found or the white bar is detected
                     if (!FishPos || Search(Color_White)) {
                         Break
@@ -222,7 +285,7 @@ Loop {
                     ; If conditions are met, continue the loop
                     if (Wait(10)) {
                         ContinueNow := True
-                        Continue
+                        Break
                     }
                     
                     ; Adjust the current position of the bar and check if the fish is in range
@@ -312,20 +375,22 @@ Reels() {
     global 
     tooltip, Current Task: Casting Rod, 100, %TooltipPosY6%, 4
     ; Move the mouse to a specific position
-    MouseMove, 100, 400
+    MouseMove, 80, 400
     
     ; Send the 'm' key to indicate the reeling action
     Send m
-    
     ; Hold the left mouse button down for 2 seconds to reel in
     Click, Down
-    Sleep 2000  ; Reel time
+    Sleep Random(600, 1200)
     Click, Up  ; Release the mouse button
     tooltip, Current Task: Wait for the bobber to appear, 100, %TooltipPosY6%, 4
-    Sleep 2000  ; Wait for the bobber to appear
+    Sleep Random(1000, 1200)
     ClickCount := 0
 }
-
+Random(Min, Max) {
+    Random, i, Min, Max
+    Return i
+}
 ; Function to detect a "shake" action by checking if the pixel position has changed
 ClickShake(ByRef ClickX, ByRef ClickY) {
     static MemoryX, MemoryY  ; Declare that variables that will be used here only
@@ -336,6 +401,7 @@ ClickShake(ByRef ClickX, ByRef ClickY) {
         if (ClickX != MemoryX || ClickY != MemoryY) {
             Click, %ClickX%, %ClickY%
             MemoryX := ClickX, MemoryY := ClickY  ; Save the new position to memory
+            Sleep 100
             Return True  ; Return True to indicate a successful shake detection
         }
     }
