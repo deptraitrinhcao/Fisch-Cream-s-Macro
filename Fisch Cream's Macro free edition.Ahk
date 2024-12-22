@@ -81,7 +81,7 @@ Sleep 100
 Send {f11}
 WinGetPos,,, RobloxWidth2,RobloxHeight2, Roblox ahk_exe RobloxPlayerBeta.exe
 IF (RobloxHeight >= RobloxHeight2) && (RobloxWidth >= RobloxWidth2) {
-    Sleep 100
+    Sleep 1000
     Send {f11}
 }
 WinGetPos,,, RobloxWidth,RobloxHeight, Roblox ahk_exe RobloxPlayerBeta.exe
