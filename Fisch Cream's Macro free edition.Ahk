@@ -77,12 +77,9 @@ If !WinActive("Roblox ahk_exe RobloxPlayerBeta.exe") {
 ; = = = = = = = = = = = = = = = = = = = = 
 ; Get the position and dimensions of the Roblox window
 WinGetPos,,, RobloxWidth,RobloxHeight, Roblox ahk_exe RobloxPlayerBeta.exe
-Sleep 100
-Send {f11}
-WinGetPos,,, RobloxWidth2,RobloxHeight2, Roblox ahk_exe RobloxPlayerBeta.exe
-IF (RobloxHeight >= RobloxHeight2) && (RobloxWidth >= RobloxWidth2) {
-    Sleep 1000
+if (RobloxWidth < A_ScreenWidth && RobloxHeight < A_ScreenHeight) {
     Send {f11}
+    Sleep 1000
 }
 WinGetPos,,, RobloxWidth,RobloxHeight, Roblox ahk_exe RobloxPlayerBeta.exe
 ; = = = = = = = = = = = = = = = = = = = =
